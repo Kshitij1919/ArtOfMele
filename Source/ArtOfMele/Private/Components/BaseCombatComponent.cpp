@@ -11,8 +11,8 @@
 #include "Editor/EditorEngine.h"
 
 
-
-
+//constructors, tick ....
+#pragma region Default Functions
 // Sets default values for this component's properties
 UBaseCombatComponent::UBaseCombatComponent()
 {
@@ -23,26 +23,6 @@ UBaseCombatComponent::UBaseCombatComponent()
 	// ...
 }
 
-
-
-
-
-void UBaseCombatComponent::Emptyfunction()
-{
-}
-
-void UBaseCombatComponent::FinishExistingTimer()
-{
-	if (TimerHandle.IsValid() && World != NULL)
-	{
-		TimerHandle.Invalidate();
-		World->GetTimerManager().ClearTimer(TimerHandle);
-	}
-
-}
-
-
-
 // Called when the game starts
 void UBaseCombatComponent::BeginPlay()
 {
@@ -52,7 +32,16 @@ void UBaseCombatComponent::BeginPlay()
 	
 }
 
+// Called every frame
+void UBaseCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// ...
+}
+#pragma endregion
+
+// this Function should only be binded to FOnMontageEnded should not be called otherwise
 void UBaseCombatComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	if (bInterrupted)
@@ -63,56 +52,12 @@ void UBaseCombatComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupt
 	else
 	{
 		CurrentAttackIndex++;
-		TempAttackSequencer(AttackSummary, SkeletalMeshComp);
+		PerfromAttackSequence(AttackSummary, SkeletalMeshComp);
 	}
-}
-
-// Called every frame
-void UBaseCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-void UBaseCombatComponent::PerfromAttack_Implementation(UObject* WorldContext, const TArray<FAttackDetails>& AttackDetail, const USkeletalMeshComponent* MeshComp)
-{
-
-	for (FAttackDetails attackdetail : AttackDetail)
-	{
-		if (UAnimMontage** MontageToPlay = AttackMappings.Find(attackdetail))
-		{
-			if (UAnimInstance* Animinstance = MeshComp->GetAnimInstance())
-			{
-				
-				float MontageLength = Animinstance->Montage_Play(*MontageToPlay, 1.0f, EMontagePlayReturnType::MontageLength, 0.0f);
-				if (MontageLength > 0.0f)
-				{
-					/*FLatentActionInfo  LatentActionhInfo;
-					LatentActionhInfo.Linkage = 0;
-					LatentActionhInfo.CallbackTarget = this->GetOwner();
-					LatentActionhInfo.ExecutionFunction = "PerfromAttack_Implementation";
-					LatentActionhInfo.UUID = GetUniqueID();
-					UKismetSystemLibrary::Delay(GetWorld(), MontageLength, LatentActionhInfo);*/
-
-					World = GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::ReturnNull);
-					if (World == NULL)
-					{
-						continue;
-					}
-					FinishExistingTimer();
-					World->GetTimerManager().SetTimer(TimerHandle, this, &UBaseCombatComponent::Emptyfunction, MontageLength, true);
-
-				}
-
-			}
-		}
-	}
-	
 }
 
 #pragma region Combat Comp Function
-void UBaseCombatComponent:: TempAttackSequencer(const TArray<FAttackDetails>& AttackDetails, const USkeletalMeshComponent* MeshComp)
+void UBaseCombatComponent::PerfromAttackSequence(const TArray<FAttackDetails>& AttackDetails, const USkeletalMeshComponent* MeshComp)
 {
 	if (AttackSummary != AttackDetails)
 	{
@@ -135,7 +80,7 @@ void UBaseCombatComponent:: TempAttackSequencer(const TArray<FAttackDetails>& At
 	UAnimMontage** MontageToPlay = AttackMappings.Find(AttackDetails[CurrentAttackIndex]);
 	UAnimInstance* MeshCompAnimInstance = MeshComp->GetAnimInstance();
 	
-	// retruning if montage or anim instance is invalid
+	// returning if montage or anim instance is invalid
 	if (MeshCompAnimInstance == NULL)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Invalid Anim Instance"));
@@ -155,11 +100,10 @@ void UBaseCombatComponent:: TempAttackSequencer(const TArray<FAttackDetails>& At
 		MontageEndedDelegate.BindUObject(this, &UBaseCombatComponent::OnMontageEnded);
 		MeshCompAnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, *MontageToPlay);
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("CurrentIndex: %d"), CurrentAttackIndex));
-		
 	}
 	else
 	{
-		//MonmtageInteruppted Code here
+		//MontageInteruppted Code here
 		OnMontageEnded(*MontageToPlay, true);
 	}
 }

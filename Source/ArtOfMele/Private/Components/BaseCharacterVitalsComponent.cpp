@@ -3,6 +3,8 @@
 
 #include "Components/BaseCharacterVitalsComponent.h"
 
+// Costructors and tick functions
+#pragma region Default Functions 
 // Sets default values for this component's properties
 UBaseCharacterVitalsComponent::UBaseCharacterVitalsComponent()
 {
@@ -31,7 +33,9 @@ void UBaseCharacterVitalsComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 	// ...
 }
+#pragma endregion 
 
+#pragma region Blueprint Getters
 float UBaseCharacterVitalsComponent::GetCurrentHealth() const
 {
 	return Health;
@@ -41,7 +45,9 @@ float UBaseCharacterVitalsComponent::GetCurrentStamina() const
 {
 	return Stamina;
 }
+#pragma endregion
 
+#pragma region BlueprintSetters
 void UBaseCharacterVitalsComponent::UpdateCurrentHealth(const float ChangeInHealth)
 {
 	Health += ChangeInHealth;
@@ -51,4 +57,4 @@ void UBaseCharacterVitalsComponent::UpdateCurrentStamina(const float ChangeInSta
 {
 	Stamina += ChangeInStamina;
 }
-
+#pragma endregion

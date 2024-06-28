@@ -33,16 +33,19 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+#pragma region Blueprint Getters
 	UFUNCTION(BlueprintGetter)
 	float GetCurrentHealth() const;
 
 	UFUNCTION(BlueprintGetter)
 	float GetCurrentStamina() const;
+#pragma endregion
 
+#pragma region Blueprint Setter
 	UFUNCTION(BlueprintCallable, meta =(ToolTip = "this Function handles both reducing and increasing Health. pass the sign along with value (+ for increase, - for Decrease)"), Category = "Update States")
 	void UpdateCurrentHealth(const float ChangeInHealth = 0.0f);
 
 	UFUNCTION(BlueprintCallable, meta = (ToolTip = "this Function handles both reducing and increasing Stamina. pass the sign along with value (+ for increase, - for Decrease)"), Category = "Update States")
 	void UpdateCurrentStamina(const float ChangeInStamina = 0.0f);
-		
+#pragma endregion		
 };

@@ -19,15 +19,21 @@ class ARTOFMELE_API UBaseCombatComponent : public UActorComponent
 
 private:
 					/*Variables*/
-	FTimerHandle TimerHandle;
-	TObjectPtr<UWorld> World;
+#pragma region Varaibles for custom Animation montage sequence
+	//Current Attack Index for fecthing montage to play from array
 	int CurrentAttackIndex = 0;
+
+	//Delegate to bind function after montage complition(Inturrupted/Successfull)
 	FOnMontageEnded MontageEndedDelegate;
 
+	//Varaible to store Attack detail for function recurrsion
 	TArray<FAttackDetails> AttackSummary;
-	 const USkeletalMeshComponent* SkeletalMeshComp;
 
+	//Varaible to store Skeletal Mesh component for function recurrsion
+	const USkeletalMeshComponent* SkeletalMeshComp;
+#pragma endregion
 
+#pragma region Core Variables
 	UPROPERTY(BlueprintGetter = GetIsInCombat, Category = "Combat|CoreVariables")
 	bool bIsInCombat = false;
 
@@ -48,14 +54,24 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), category = "Combat|CoreVariables")
 	bool bCanPlayAnimMontage = true;
+#pragma endregion
 
+public:	
+	// Sets default values for this component's properties
+	UBaseCombatComponent();
 
-public:
-//Variables
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
 
+	//Delegate Binder for Animation Montage Complition(Interuppted/Successfull)
+	UFUNCTION()
+	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
-
-//Functions
+public:	
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	//Functions
 #pragma region Getter Functions
 	UFUNCTION(BlueprintGetter)
 	bool GetIsInCombat() const;
@@ -81,7 +97,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Blueprintcallable, Category = "StateUpdates")
 	void UpdateCharacterCombatStates(const ECombatStates NewCombatState);
 	virtual void UpdateCharacterCombatStates_Implementation(const ECombatStates NewCombatState);
-	
+
 	UFUNCTION(BlueprintNativeEvent, Blueprintcallable, Category = "StateUpdates")
 	void UpdateIsCharacterDodging(const bool Dodging);
 	virtual void UpdateIsCharacterDodging_Implementation(const bool Dodging);
@@ -96,39 +112,8 @@ public:
 #pragma endregion
 
 #pragma region Combat Comp Functions
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (WorldContext = "WorldContext"/*, BlueprintInternalUseOnly = "true"*/), Category = "CombatFunctions")
-	void PerfromAttack(UObject* WorldContext,  const TArray<FAttackDetails>& AttackDetail, const USkeletalMeshComponent* MeshComp);
-	virtual void PerfromAttack_Implementation(UObject* WorldContext, const TArray<FAttackDetails>& AttackDetail, const USkeletalMeshComponent* MeshComp);
-
 	UFUNCTION(BlueprintCallable, Category = "CombatFunctions")
-	void TempAttackSequencer(const TArray<FAttackDetails>& AttackDetails, const USkeletalMeshComponent* MeshComp);
+	void PerfromAttackSequence(const TArray<FAttackDetails>& AttackDetails, const USkeletalMeshComponent* MeshComp);
 #pragma endregion
-
-
-
-
-public:	
-	// Sets default values for this component's properties
-	UBaseCombatComponent();
-
-	//Temprory Function delete After Utilization
-	void Emptyfunction();
-
-	//End Exisitng Timer
-	UFUNCTION(BlueprintCallable, Category = "LatentAction")
-	void FinishExistingTimer();
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-	//Delegate Binders
-	UFUNCTION()
-	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 		
 };

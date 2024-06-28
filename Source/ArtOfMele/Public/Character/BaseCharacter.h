@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Interfaces/CharacterInterface.h"
+#include "Interfaces/CharacterInterface.h" // interface Include
 #include "BaseCharacter.generated.h"
 
 enum class ECharacterLocomotionStates : uint8;

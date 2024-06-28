@@ -5,6 +5,7 @@
 #include "Data/GlobalData.h"
 #include "Kismet/GameplayStatics.h" //delta seconds include
 
+#pragma region Default Functions
 // Sets default values
 ABaseCharacter::ABaseCharacter()
 {
@@ -25,6 +26,9 @@ void ABaseCharacter::BeginPlay()
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	//Calculate Essential Values
+	Acceleration = CalculateAcceleration();
 
 }
 
@@ -35,13 +39,18 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
+#pragma endregion
+
+#pragma region Esential Values Functions
 FVector ABaseCharacter::CalculateAcceleration_Implementation() const
 {
 	return (this->GetVelocity() - PreviousVelocity) / UGameplayStatics::GetWorldDeltaSeconds(GetWorld());
 }
 
+#pragma endregion
 
 
+#pragma region Character Interface Implementation
 FCharacterValues ABaseCharacter::GetCharacterEssentialValues_Implementation()
 {
 	return FCharacterValues();
@@ -51,6 +60,6 @@ FCharacterStates ABaseCharacter::GetCharacterStates_Implementation()
 {
 	return FCharacterStates();
 }
-
+#pragma endregion
 
 

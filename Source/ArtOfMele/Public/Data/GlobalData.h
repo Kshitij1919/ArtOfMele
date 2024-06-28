@@ -53,6 +53,7 @@ enum class EAttackDirection : uint8
 
 #pragma endregion
 
+// for mapping Attack Details
 USTRUCT(BlueprintType)
 struct FAttackDetails
 {
@@ -96,6 +97,7 @@ struct FAttackDetails
 
 };
 
+// for creating Custom TMap
 #if UE_BUILD_DEBUG
 uint32 GetTypeHash(const FAttackDetails& MyStruct);
 #else
