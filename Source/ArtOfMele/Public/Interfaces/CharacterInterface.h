@@ -63,5 +63,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,  Category = "CharacterInterfaces")
 	FCharacterValues GetCharacterEssentialValues();
 
+	//Update Rotation Setting of Character 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "CharacterInterfaces")
+	void UpdateCharacterRotationSetting(const bool IsCharacterInCombat);
 
 };

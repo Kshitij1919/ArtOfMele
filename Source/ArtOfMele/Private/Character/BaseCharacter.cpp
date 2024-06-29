@@ -4,6 +4,7 @@
 #include "Character/BaseCharacter.h"
 #include "Data/GlobalData.h"
 #include "Kismet/GameplayStatics.h" //delta seconds include
+#include "GameFramework/CharacterMovementComponent.h" //Character movement component 
 
 #pragma region Default Functions
 // Sets default values
@@ -59,6 +60,23 @@ FCharacterValues ABaseCharacter::GetCharacterEssentialValues_Implementation()
 FCharacterStates ABaseCharacter::GetCharacterStates_Implementation()
 {
 	return FCharacterStates();
+}
+
+void ABaseCharacter::UpdateCharacterRotationSetting_Implementation(const bool IsCharacterInCombat)
+{
+	if (IsCharacterInCombat)
+	{
+		//For Strafe Movement
+		this->GetCharacterMovement()->bOrientRotationToMovement = false;
+		this->GetCharacterMovement()->bUseControllerDesiredRotation = true;
+		
+	}
+	else
+	{
+		//For free roam
+		this->GetCharacterMovement()->bOrientRotationToMovement = true;
+		this->GetCharacterMovement()->bUseControllerDesiredRotation = false;
+	}
 }
 #pragma endregion
 

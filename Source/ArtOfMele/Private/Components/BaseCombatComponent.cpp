@@ -2,13 +2,9 @@
 
 
 #include "Components/BaseCombatComponent.h"
-#include "Animation/AnimMontage.h"
+#include "Animation/AnimMontage.h" //Animation Montage Includes
 #include "Animation/AnimInstance.h"
-//#include "Kismet/KismetSystemLibrary.h
-//LatentAction Includes
-#include "Engine.h"
-#include "Engine/World.h"
-#include "Editor/EditorEngine.h"
+#include "Interfaces/CharacterInterface.h"
 
 
 //constructors, tick ....
@@ -129,6 +125,13 @@ void UBaseCombatComponent::UpdateCanPlayMontage_Implementation(const bool canpla
 void UBaseCombatComponent::UpdateIsCharacterInCombat_Implementation(const bool bShouldCharacterbeInCombat)
 {
 	bIsInCombat = bShouldCharacterbeInCombat;
+
+	//Check if the Owner of the Component Implements Character Interface.
+	//  if yes call UpdateCharacterRotationSetting
+	if (ICharacterInterface* CharacterI = Cast<ICharacterInterface>(this->GetOwner()))
+	{
+		CharacterI->UpdateCharacterRotationSetting_Implementation(bIsInCombat);
+	}
 }
 
 void UBaseCombatComponent::UpdateCharacterCombatStates_Implementation(const ECombatStates NewCombatState)

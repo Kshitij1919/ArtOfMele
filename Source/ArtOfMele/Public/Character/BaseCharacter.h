@@ -63,6 +63,9 @@ public:
 
 	FCharacterStates GetCharacterStates();
 	virtual FCharacterStates GetCharacterStates_Implementation() override;
+
+	void UpdateCharacterRotationSetting(const bool IsCharacterInCombat);
+	virtual void UpdateCharacterRotationSetting_Implementation(const bool IsCharacterInCombat) override;
 	
 #pragma endregion
 
