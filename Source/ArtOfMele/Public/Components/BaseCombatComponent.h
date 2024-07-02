@@ -12,6 +12,7 @@
 
 class USkeletalMeshComponent;
 
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable, Abstract)
 class ARTOFMELE_API UBaseCombatComponent : public UActorComponent
 {
@@ -54,6 +55,17 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), category = "Combat|CoreVariables")
 	bool bCanPlayAnimMontage = true;
+
+	UPROPERTY(BlueprintGetter = GetBlockHealth, BlueprintSetter = UpdateBlockHealth, meta = (ClampMin = 0.0f, ClampMax = 100.0f, AllowPrivateAccess = "true"), category = "Combat|CoreVariables")
+	float  BlockHealth = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), category = "Combat|CoreVariables")
+	TMap<EAttackTarget, UAnimMontage*> SpecialAttackMappings;
+
+	//Variable Modifiers
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, meta = (ClampMin = 0.0f, ClampMax = 1.0f, AllowPrivateAccess = "true"), category = "Combat|CoreVariables")
+	float BlockHealthDamageModifier = 1.0f;
+
 #pragma endregion
 
 public:	
@@ -87,6 +99,9 @@ public:
 
 	UFUNCTION(BlueprintGetter)
 	bool CanPlayMontage() const;
+
+	UFUNCTION(BlueprintGetter)
+	float GetBlockHealth() const;
 #pragma endregion
 
 #pragma region Update States Function
@@ -109,6 +124,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Blueprintcallable, Category = "StateUpdates")
 	void UpdateIsCharacterBlocking(const bool Blocking);
 	virtual void UpdateIsCharacterBlocking_Implementation(const bool Blocking);
+
+	UFUNCTION(BlueprintCallable, meta = (ToolTip = "this Function handles both reducing and increasing BlockHealth. Pass the sign along with value (+ for increase, - for Decrease)"), Category = "StatteUpdates")
+	void UpdateBlockHealth(const float ChangeInBlockHealth = 0.0f);
 #pragma endregion
 
 #pragma region Combat Comp Functions

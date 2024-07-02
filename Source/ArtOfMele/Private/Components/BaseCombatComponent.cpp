@@ -4,8 +4,8 @@
 #include "Components/BaseCombatComponent.h"
 #include "Animation/AnimMontage.h" //Animation Montage Includes
 #include "Animation/AnimInstance.h"
-#include "Interfaces/CharacterInterface.h"
-
+#include "Interfaces/CharacterInterface.h" //Character 
+#include "CustomFunctionLibrary/MathFunctions.h" //Static Function include
 
 //constructors, tick ....
 #pragma region Default Functions
@@ -117,6 +117,16 @@ void UBaseCombatComponent::UpdateIsCharacterBlocking_Implementation(const bool B
 	bIsCharacterBlocking = Blocking;
 }
 
+void UBaseCombatComponent::UpdateBlockHealth(const float ChangeInBlockHealth)
+{
+	if (BlockHealth <= 0.0f || BlockHealth >= 100.0f)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString::Printf(TEXT("Update failed Value at Max/Min Capacity")));
+		return;
+	}
+	MathFunctions::UpdateAndClampValues<float>(BlockHealth, ChangeInBlockHealth, 0.0f, 100.0f);
+}
+
 void UBaseCombatComponent::UpdateCanPlayMontage_Implementation(const bool canplaymontage)
 {
 	bCanPlayAnimMontage = canplaymontage;
@@ -163,6 +173,10 @@ bool UBaseCombatComponent::GetIsCharacterBlocking() const
 bool UBaseCombatComponent::CanPlayMontage() const
 {
 	return bCanPlayAnimMontage;
+}
+float UBaseCombatComponent::GetBlockHealth() const
+{
+	return BlockHealth;
 }
 #pragma endregion
 
