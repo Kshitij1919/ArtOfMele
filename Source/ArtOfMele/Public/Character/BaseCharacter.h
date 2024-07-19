@@ -67,8 +67,11 @@ public:
 	void UpdateCharacterRotationSetting(const bool IsCharacterInCombat);
 	virtual void UpdateCharacterRotationSetting_Implementation(const bool IsCharacterInCombat) override;
 	
+	void UpdateCharacterLocomotionState(const ECharacterLocomotionStates IncomingLocomotionState);
+	virtual void UpdateCharacterLocomotionState_Implementation(const ECharacterLocomotionStates IncomingLocomotionState) override;
 #pragma endregion
 
-
+private:
+	void UpdateCharacterLocomotionSpeed();
 
 };

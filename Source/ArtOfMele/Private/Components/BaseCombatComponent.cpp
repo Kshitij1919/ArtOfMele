@@ -43,11 +43,13 @@ void UBaseCombatComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupt
 	if (bInterrupted)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Interuppted at CurrentIndex: %d"), CurrentAttackIndex));
+		UpdateCharacterCombatStates_Implementation(ECombatStates::NEUTRAL);
 
 	}
 	else
 	{
 		CurrentAttackIndex++;
+		UpdateCharacterCombatStates_Implementation(ECombatStates::NEUTRAL);
 		PerfromAttackSequence(AttackSummary, SkeletalMeshComp);
 	}
 }
@@ -93,6 +95,7 @@ void UBaseCombatComponent::PerfromAttackSequence(const TArray<FAttackDetails>& A
 	bool bMontagePlayedSuccessfully = (MontageLength > 0.0f);
 	if (bMontagePlayedSuccessfully)
 	{ 
+		UpdateCharacterCombatStates_Implementation(ECombatStates::ATTACKING);
 		MontageEndedDelegate.BindUObject(this, &UBaseCombatComponent::OnMontageEnded);
 		MeshCompAnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, *MontageToPlay);
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("CurrentIndex: %d"), CurrentAttackIndex));
@@ -100,6 +103,7 @@ void UBaseCombatComponent::PerfromAttackSequence(const TArray<FAttackDetails>& A
 	else
 	{
 		//MontageInteruppted Code here
+
 		OnMontageEnded(*MontageToPlay, true);
 	}
 }

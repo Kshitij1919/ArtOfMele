@@ -67,4 +67,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "CharacterInterfaces")
 	void UpdateCharacterRotationSetting(const bool IsCharacterInCombat);
 
+	//Update Character Locomotion states
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "CharacterInterfaces")
+	void UpdateCharacterLocomotionState(const ECharacterLocomotionStates IncomingLocomotionState);
+
 };

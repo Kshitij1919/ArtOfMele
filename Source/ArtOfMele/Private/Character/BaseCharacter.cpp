@@ -78,6 +78,27 @@ void ABaseCharacter::UpdateCharacterRotationSetting_Implementation(const bool Is
 		this->GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	}
 }
+void ABaseCharacter::UpdateCharacterLocomotionState_Implementation(const ECharacterLocomotionStates IncomingLocomotionState)
+{
+	LocomotionStates = IncomingLocomotionState;
+	UpdateCharacterLocomotionSpeed();
+}
 #pragma endregion
 
-
+void ABaseCharacter::UpdateCharacterLocomotionSpeed()
+{
+	switch (LocomotionStates)
+	{
+	case ECharacterLocomotionStates::WALKING:
+		GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		break;
+	case ECharacterLocomotionStates::JOGGING:
+		GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		break;
+	case ECharacterLocomotionStates::RUNNING:
+		GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+		break;
+	default:
+		break;
+	}
+}
