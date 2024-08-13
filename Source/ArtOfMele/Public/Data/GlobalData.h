@@ -17,6 +17,15 @@ enum class ECharacterLocomotionStates : uint8
 
 #pragma region Combat Enums
 
+UENUM(BlueprintType, meta = (ToolTip = "This Enum is used for animation notfiy Logic Use only. Do not use this in any other Context"))
+enum class ESimplifiedAttackType : uint8
+{
+	LEFTPUNCH  UMETA(DisplayName = "Left Punch"),
+	RIGHTPUNCH UMETA(DisplayName = "Right Punch"),
+	LEFTKICK   UMETA(DisplayName = "Left Kick"),
+	RIGHTKICK  UMETA(DisplayName = "Right Kick")
+};
+
 UENUM(BlueprintType)
 enum class ECombatStates : uint8
 {
@@ -55,7 +64,7 @@ enum class EAttackDirection : uint8
 
 // for mapping Attack Details
 USTRUCT(BlueprintType)
-struct FAttackDetails
+struct FAttackDetails : public FTableRowBase
 {
 	GENERATED_BODY()
 
@@ -94,6 +103,62 @@ struct FAttackDetails
 
 		return false;
 	}
+
+	
+	FName GetAttackDetailAsFName() const
+	{
+		FString S_AttackDetail = AttackTargetToString() + AttackDirectionToString() + AttackTargetToString();
+		return FName(*S_AttackDetail);
+	}
+
+#pragma region Enum to FString Conversions
+	// Enum to String Conversions
+	 FString AttackTargetToString() const
+	{
+		switch (AttackTarget)
+		{
+		case EAttackTarget::HEAD:
+			return "Head";
+		case EAttackTarget::BODY:
+			return "Body";
+		default:
+			return "Invalid";
+		}
+	}
+
+	 FString AttackDirectionToString() const
+	 {
+		 switch (AttackDirection)
+		 {
+		 case EAttackDirection::LEFT:
+			 return "Left";
+		 case EAttackDirection::RIGHT:
+			 return "Right";
+		 default:
+			 return "Invalid";
+		 }
+	 }
+
+	 FString AttackTypeToString() const
+	 {
+		 switch (AttackType)
+		 {
+		 case EAttackType::JAB:
+			 return "Jab";
+		 case EAttackType::CROSS:
+			 return "Cross";
+		 case EAttackType::HOOK:
+			 return "Hook";
+		 case EAttackType::FRONTKICK:
+			 return "FrontKick";
+		 case EAttackType::ROUNDHOUSEKICK:
+			 return "RoundHouseKick";
+		 default:
+			 return "Invalid";
+		 }
+	 }
+
+#pragma endregion
 
 };
 

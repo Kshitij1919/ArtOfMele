@@ -6,6 +6,9 @@
 #include "Animation/AnimInstance.h"
 #include "Interfaces/CharacterInterface.h" //Character 
 #include "CustomFunctionLibrary/MathFunctions.h" //Static Function include
+#include "Kismet/GameplayStatics.h" //Getting Fight Animation
+#include "GameInstance/ArtOfMeleGameInstance.h" // Game Instance
+
 
 //constructors, tick ....
 #pragma region Default Functions
@@ -66,6 +69,15 @@ void UBaseCombatComponent::PerfromAttackSequence(const TArray<FAttackDetails>& A
 		SkeletalMeshComp = MeshComp;
 	}
 	
+	// Get Current Current GameInstance 
+	TObjectPtr<UGameInstance> CurrentGameInstance = UGameplayStatics::GetGameInstance(GetWorld());
+
+	if (CurrentGameInstance == NULL)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Invalid Game Instance")));
+		UE_LOG(LogTemp, Error, TEXT("Invalid Game Instance"));
+		return;
+	}
 	
 	//checking if the current attack index has not excedded the attackdetails array size
 	if (CurrentAttackIndex >= AttackDetails.Num())
@@ -73,16 +85,29 @@ void UBaseCombatComponent::PerfromAttackSequence(const TArray<FAttackDetails>& A
 		CurrentAttackIndex = 0;
 		return;
 	}
-
-	//matching the attack detail provided by the designer with attackmapping key to get the appropriate Montage;
-	UAnimMontage** MontageToPlay = AttackMappings.Find(AttackDetails[CurrentAttackIndex]);
-	UAnimInstance* MeshCompAnimInstance = MeshComp->GetAnimInstance();
 	
-	// returning if montage or anim instance is invalid
+	TObjectPtr<UAnimInstance> MeshCompAnimInstance = MeshComp->GetAnimInstance();
 	if (MeshCompAnimInstance == NULL)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Invalid Anim Instance"));
 		return;
+	}
+	
+	TObjectPtr<UAnimMontage> /*UAnimMontage**/ MontageToPlay;
+	if (ICombatAttacks* CombatAtackInterfaceRef =  Cast<ICombatAttacks>(CurrentGameInstance))
+	{
+		//matching the attack detail provided by the designer with attackmapping key
+		//to get the appropriate Montage;
+
+		//Note to Myself this method of calling interface should not work
+		// because of not implementing this function in blueprint
+		// sometimes this works fine(but should not work as no blueprint function implementation exist in child classes or the parent calss)
+		// but someitmes the editor crashes thrwoing an unhandeled exception, cause not yet found
+		
+		//CombatAtackInterfaceRef->Execute_GetAttackFromAttackDetail(/*CurrentGameInstance*/ this->GetOwner(), AttackDetails[CurrentAttackIndex]);
+		
+		//calling the pure interface function instead
+		MontageToPlay =  CombatAtackInterfaceRef->GetAttackFromAttackDetail_Implementation(AttackDetails[CurrentAttackIndex]);
 	}
 	if (MontageToPlay == NULL)
 	{
@@ -91,20 +116,20 @@ void UBaseCombatComponent::PerfromAttackSequence(const TArray<FAttackDetails>& A
 	}
 
 	//Play the Anim montage and store the length of the montage
-	const float MontageLength = MeshCompAnimInstance->Montage_Play(*MontageToPlay,1.0f, EMontagePlayReturnType::MontageLength, 0.0f);
+	const float MontageLength = MeshCompAnimInstance->Montage_Play(MontageToPlay,1.0f, EMontagePlayReturnType::MontageLength, 0.0f);
 	bool bMontagePlayedSuccessfully = (MontageLength > 0.0f);
 	if (bMontagePlayedSuccessfully)
 	{ 
 		UpdateCharacterCombatStates_Implementation(ECombatStates::ATTACKING);
 		MontageEndedDelegate.BindUObject(this, &UBaseCombatComponent::OnMontageEnded);
-		MeshCompAnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, *MontageToPlay);
+		MeshCompAnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, MontageToPlay);
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("CurrentIndex: %d"), CurrentAttackIndex));
 	}
 	else
 	{
 		//MontageInteruppted Code here
 
-		OnMontageEnded(*MontageToPlay, true);
+		OnMontageEnded(MontageToPlay, true);
 	}
 }
 #pragma endregion
