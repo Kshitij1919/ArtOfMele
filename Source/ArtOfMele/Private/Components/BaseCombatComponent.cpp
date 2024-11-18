@@ -124,6 +124,7 @@ void UBaseCombatComponent::PerfromAttackSequence(const TArray<FAttackDetails>& A
 		MontageEndedDelegate.BindUObject(this, &UBaseCombatComponent::OnMontageEnded);
 		MeshCompAnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, MontageToPlay);
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("CurrentIndex: %d"), CurrentAttackIndex));
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::Printf(TEXT("Once")));
 	}
 	else
 	{
@@ -169,7 +170,7 @@ void UBaseCombatComponent::UpdateIsCharacterInCombat_Implementation(const bool b
 	//  if yes call UpdateCharacterRotationSetting
 	if (ICharacterInterface* CharacterI = Cast<ICharacterInterface>(this->GetOwner()))
 	{
-		CharacterI->UpdateCharacterRotationSetting_Implementation(bIsInCombat);
+		//CharacterI->UpdateCharacterRotationSetting_Implementation(bIsInCombat);
 	}
 }
 
